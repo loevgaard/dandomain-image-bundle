@@ -80,18 +80,15 @@ class Helper
         $imagesCreated = [];
 
         foreach ($imageSettings as $imageType => $imageSetting) {
-            echo "Image setting for $imageType\n\n";
-            print_r($imageSetting);
-            echo "\n\n";
-
             $image = $imagine->open($file);
-            // @todo this only works for images where the height is larger than the width, fix this
-            $image->resize($image->getSize()->widen($imageSetting['width']));
-            echo "Resized image size:";
-            print_r($image->getSize());
-            echo "\n\n";
 
             if($imageSetting['height']) {
+                if($image->getSize()->getWidth() > $image->getSize()->getHeight()) {
+                    $image->resize($image->getSize()->heighten($imageSetting['width']));
+                } else {
+                    $image->resize($image->getSize()->widen($imageSetting['height']));
+                }
+
                 $actualRatio = $image->getSize()->getWidth() / $image->getSize()->getHeight();
                 $wantedRatio = $imageSetting['width'] / $imageSetting['height'];
                 if($actualRatio !== $wantedRatio) {
@@ -100,6 +97,8 @@ class Helper
                     $newImage->paste($image, new Point(0, 0));
                     $image = $newImage;
                 }
+            } else {
+                $image->resize($image->getSize()->widen($imageSetting['width']));
             }
 
             $image->save($imageFileVariations[$imageType], $saveOptions);
