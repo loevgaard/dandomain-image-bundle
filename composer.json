@@ -4,6 +4,7 @@
     "homepage": "https://github.com/loevgaard/dandomain-image-bundle",
     "type": "symfony-bundle",
     "license": "MIT",
+    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Joachim Løvgaard",
