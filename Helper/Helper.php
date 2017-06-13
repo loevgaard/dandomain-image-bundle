@@ -4,6 +4,7 @@ namespace Loevgaard\DandomainImageBundle\Helper;
 
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
+use Imagine\Image\Point;
 use Imagine\Imagick\Imagine;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -82,7 +83,16 @@ class Helper
             $image = $imagine->open($file);
 
             if($imageSetting['height']) {
-                $image->resize(new Box($imageSetting['width'], $imageSetting['height']));
+                $actualRatio = $image->getSize()->getWidth() / $image->getSize()->getHeight();
+                $wantedRatio = $imageSetting['width'] / $imageSetting['height'];
+                if($actualRatio === $wantedRatio) {
+                    $image->resize(new Box($imageSetting['width'], $imageSetting['height']));
+                } else {
+                    // if the two ratios are different we add a white background to accommodate the difference
+                    $newImage = $imagine->create(new Box($imageSetting['width'], $imageSetting['height']));
+                    $newImage->paste($image, new Point(0, 0));
+                    $image = $newImage;
+                }
             } else {
                 $image->resize($image->getSize()->widen($imageSetting['width']));
             }
