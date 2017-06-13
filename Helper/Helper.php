@@ -82,12 +82,18 @@ class Helper
         foreach ($imageSettings as $imageType => $imageSetting) {
             $image = $imagine->open($file);
 
+            print_r($imageSetting);
+
+            // if the height is set the image resulting image has to be within a container
+            // that has the size of $imageSetting['width'] x $imageSetting['height']
             if($imageSetting['height']) {
                 if($image->getSize()->getWidth() > $image->getSize()->getHeight()) {
                     $image->resize($image->getSize()->heighten($imageSetting['width']));
                 } else {
                     $image->resize($image->getSize()->widen($imageSetting['height']));
                 }
+
+                print_r($image->getSize());
 
                 $actualRatio = $image->getSize()->getWidth() / $image->getSize()->getHeight();
                 $wantedRatio = $imageSetting['width'] / $imageSetting['height'];
