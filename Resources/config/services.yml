@@ -1,0 +1,4 @@
+services:
+    loevgaard_dandomain_image.helper:
+        class: Loevgaard\DandomainImageBundle\Helper\Helper
+        arguments: ["@service_container"]
