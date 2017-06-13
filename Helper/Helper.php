@@ -88,9 +88,9 @@ class Helper
             // that has the size of $imageSetting['width'] x $imageSetting['height']
             if($imageSetting['height']) {
                 if($image->getSize()->getWidth() > $image->getSize()->getHeight()) {
-                    $image->resize($image->getSize()->heighten($imageSetting['width']));
+                    $image->resize($image->getSize()->widen($imageSetting['width']));
                 } else {
-                    $image->resize($image->getSize()->widen($imageSetting['height']));
+                    $image->resize($image->getSize()->heighten($imageSetting['height']));
                 }
 
                 print_r($image->getSize());
