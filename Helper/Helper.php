@@ -82,8 +82,6 @@ class Helper
         foreach ($imageSettings as $imageType => $imageSetting) {
             $image = $imagine->open($file);
 
-            print_r($imageSetting);
-
             // if the height is set the image resulting image has to be within a container
             // that has the size of $imageSetting['width'] x $imageSetting['height']
             if($imageSetting['height']) {
@@ -93,14 +91,16 @@ class Helper
                     $image->resize($image->getSize()->heighten($imageSetting['height']));
                 }
 
-                print_r($image->getSize());
-
                 $actualRatio = $image->getSize()->getWidth() / $image->getSize()->getHeight();
                 $wantedRatio = $imageSetting['width'] / $imageSetting['height'];
                 if($actualRatio !== $wantedRatio) {
                     // if the two ratios are different we add a white background to accommodate the difference
                     $newImage = $imagine->create(new Box($imageSetting['width'], $imageSetting['height']));
-                    $newImage->paste($image, new Point(0, 0));
+
+                    $x = round(($newImage->getSize()->getWidth() - $image->getSize()->getWidth()) / 2);
+                    $y = round(($newImage->getSize()->getHeight() - $image->getSize()->getHeight()) / 2);
+
+                    $newImage->paste($image, new Point($x, $y));
                     $image = $newImage;
                 }
             } else {
