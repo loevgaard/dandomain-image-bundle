@@ -28,11 +28,11 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->integerNode('jpeg_quality')->defaultValue(100)->end()
+                ->integerNode('png_compression_level')->defaultValue(0)->end()
+                ->integerNode('resolution_x')->defaultValue(72)->end()
+                ->integerNode('resolution_y')->defaultValue(72)->end()
             ->end()
-            ->integerNode('jpeg_quality')->defaultValue(100)->end()
-            ->integerNode('png_compression_level')->defaultValue(0)->end()
-            ->integerNode('resolution_x')->defaultValue(72)->end()
-            ->integerNode('resolution_y')->defaultValue(72)->end()
         ;
 
         return $treeBuilder;
