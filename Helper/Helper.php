@@ -66,21 +66,15 @@ class Helper
     }
 
     public function createImageVariations($file) {
-        $imagine = new Imagine();
-
-        $saveOptions = array(
-            'resolution-units'      => ImageInterface::RESOLUTION_PIXELSPERINCH,
-            'resolution-x'          => $this->container->getParameter('loevgaard_dandomain_image.resolution_x'),
-            'resolution-y'          => $this->container->getParameter('loevgaard_dandomain_image.resolution_y'),
-            'jpeg_quality'          => $this->container->getParameter('loevgaard_dandomain_image.jpeg_quality'),
-            'png_compression_level' => $this->container->getParameter('loevgaard_dandomain_image.png_compression_level'),
-        );
-
         $imageSettings = $this->getImageSettings();
         $imageFileVariations = $this->getImageFilenameVariations($file);
         $imagesCreated = [];
 
         if($this->container->getParameter('loevgaard_dandomain_image.tinypng')) {
+            // since we are optimizing images we save the original image so we can revert this if we want
+            copy($file, $imageFileVariations['original']);
+            $imagesCreated['original'] = $imageFileVariations['original'];
+
             /** @var Source $source */
             $source = \Tinify\fromFile($file);
 
@@ -95,6 +89,16 @@ class Helper
                 $imagesCreated[$imageType] = $imageFileVariations[$imageType];
             }
         } else {
+            $imagine = new Imagine();
+
+            $saveOptions = array(
+                'resolution-units'      => ImageInterface::RESOLUTION_PIXELSPERINCH,
+                'resolution-x'          => $this->container->getParameter('loevgaard_dandomain_image.resolution_x'),
+                'resolution-y'          => $this->container->getParameter('loevgaard_dandomain_image.resolution_y'),
+                'jpeg_quality'          => $this->container->getParameter('loevgaard_dandomain_image.jpeg_quality'),
+                'png_compression_level' => $this->container->getParameter('loevgaard_dandomain_image.png_compression_level'),
+            );
+
             foreach ($imageSettings as $imageType => $imageSetting) {
                 $image = $imagine->open($file);
 
