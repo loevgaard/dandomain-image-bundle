@@ -86,9 +86,9 @@ class Helper
             // that has the size of $imageSetting['width'] x $imageSetting['height']
             if($imageSetting['height']) {
                 if($image->getSize()->getWidth() > $image->getSize()->getHeight()) {
-                    $image->resize($image->getSize()->widen($imageSetting['width']));
+                    $image->resize($image->getSize()->widen($imageSetting['width']), ImageInterface::FILTER_LANCZOS);
                 } else {
-                    $image->resize($image->getSize()->heighten($imageSetting['height']));
+                    $image->resize($image->getSize()->heighten($imageSetting['height']), ImageInterface::FILTER_LANCZOS);
                 }
 
                 $actualRatio = $image->getSize()->getWidth() / $image->getSize()->getHeight();
@@ -104,7 +104,7 @@ class Helper
                     $image = $newImage;
                 }
             } else {
-                $image->resize($image->getSize()->widen($imageSetting['width']));
+                $image->resize($image->getSize()->widen($imageSetting['width']), ImageInterface::FILTER_LANCZOS);
             }
 
             $image->save($imageFileVariations[$imageType], $saveOptions);
