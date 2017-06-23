@@ -27,6 +27,7 @@ class LoevgaardDandomainImageExtension extends Extension
         $container->setParameter('loevgaard_dandomain_image.png_compression_level', $config['png_compression_level']);
         $container->setParameter('loevgaard_dandomain_image.resolution_x',          $config['resolution_x']);
         $container->setParameter('loevgaard_dandomain_image.resolution_y',          $config['resolution_y']);
+        $container->setParameter('loevgaard_dandomain_image.tinypng',               $config['tinypng']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

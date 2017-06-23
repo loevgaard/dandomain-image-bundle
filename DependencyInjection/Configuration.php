@@ -32,6 +32,7 @@ class Configuration implements ConfigurationInterface
                 ->integerNode('png_compression_level')->defaultValue(0)->end()
                 ->integerNode('resolution_x')->defaultValue(72)->end()
                 ->integerNode('resolution_y')->defaultValue(72)->end()
+                ->booleanNode('tinypng')->defaultFalse()->end()
             ->end()
         ;
 

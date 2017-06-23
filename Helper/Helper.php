@@ -7,6 +7,7 @@ use Imagine\Image\ImageInterface;
 use Imagine\Image\Point;
 use Imagine\Imagick\Imagine;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Tinify\Source;
 
 class Helper
 {
@@ -79,36 +80,54 @@ class Helper
         $imageFileVariations = $this->getImageFilenameVariations($file);
         $imagesCreated = [];
 
-        foreach ($imageSettings as $imageType => $imageSetting) {
-            $image = $imagine->open($file);
+        if($this->container->getParameter('loevgaard_dandomain_image.tinypng')) {
+            /** @var Source $source */
+            $source = \Tinify\fromFile($file);
 
-            // if the height is set the image resulting image has to be within a container
-            // that has the size of $imageSetting['width'] x $imageSetting['height']
-            if($imageSetting['height']) {
-                if($image->getSize()->getWidth() > $image->getSize()->getHeight()) {
-                    $image->resize($image->getSize()->widen($imageSetting['width']), ImageInterface::FILTER_LANCZOS);
-                } else {
-                    $image->resize($image->getSize()->heighten($imageSetting['height']), ImageInterface::FILTER_LANCZOS);
-                }
+            foreach ($imageSettings as $imageType => $imageSetting) {
+                $image = $source->resize([
+                    'method'    => 'fit',
+                    'width'     => $imageSetting['width'],
+                    'height'    => $imageSetting['height'],
+                ]);
 
-                $actualRatio = $image->getSize()->getWidth() / $image->getSize()->getHeight();
-                $wantedRatio = $imageSetting['width'] / $imageSetting['height'];
-                if($actualRatio !== $wantedRatio) {
-                    // if the two ratios are different we add a white background to accommodate the difference
-                    $newImage = $imagine->create(new Box($imageSetting['width'], $imageSetting['height']));
-
-                    $x = round(($newImage->getSize()->getWidth() - $image->getSize()->getWidth()) / 2);
-                    $y = round(($newImage->getSize()->getHeight() - $image->getSize()->getHeight()) / 2);
-
-                    $newImage->paste($image, new Point($x, $y));
-                    $image = $newImage;
-                }
-            } else {
-                $image->resize($image->getSize()->widen($imageSetting['width']), ImageInterface::FILTER_LANCZOS);
+                $image->toFile($imageFileVariations[$imageType]);
+                $imagesCreated[$imageType] = $imageFileVariations[$imageType];
             }
+        } else {
+            foreach ($imageSettings as $imageType => $imageSetting) {
+                $image = $imagine->open($file);
 
-            $image->save($imageFileVariations[$imageType], $saveOptions);
-            $imagesCreated[$imageType] = $imageFileVariations[$imageType];
+                // if the height is set the image resulting image has to be within a container
+                // that has the size of $imageSetting['width'] x $imageSetting['height']
+                if ($imageSetting['height']) {
+                    if ($image->getSize()->getWidth() > $image->getSize()->getHeight()) {
+                        $image->resize($image->getSize()->widen($imageSetting['width']),
+                            ImageInterface::FILTER_LANCZOS);
+                    } else {
+                        $image->resize($image->getSize()->heighten($imageSetting['height']),
+                            ImageInterface::FILTER_LANCZOS);
+                    }
+
+                    $actualRatio = $image->getSize()->getWidth() / $image->getSize()->getHeight();
+                    $wantedRatio = $imageSetting['width'] / $imageSetting['height'];
+                    if ($actualRatio !== $wantedRatio) {
+                        // if the two ratios are different we add a white background to accommodate the difference
+                        $newImage = $imagine->create(new Box($imageSetting['width'], $imageSetting['height']));
+
+                        $x = round(($newImage->getSize()->getWidth() - $image->getSize()->getWidth()) / 2);
+                        $y = round(($newImage->getSize()->getHeight() - $image->getSize()->getHeight()) / 2);
+
+                        $newImage->paste($image, new Point($x, $y));
+                        $image = $newImage;
+                    }
+                } else {
+                    $image->resize($image->getSize()->widen($imageSetting['width']), ImageInterface::FILTER_LANCZOS);
+                }
+
+                $image->save($imageFileVariations[$imageType], $saveOptions);
+                $imagesCreated[$imageType] = $imageFileVariations[$imageType];
+            }
         }
 
         return $imagesCreated;

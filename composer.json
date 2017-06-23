@@ -16,6 +16,9 @@
         "imagine/imagine": "^0.7.1",
         "symfony/framework-bundle": "^2.7 || ^3.0"
     },
+    "require-dev": {
+        "loevgaard/tinypng-bundle": "^0.1.0"
+    },
     "autoload": {
         "psr-4": {
             "Loevgaard\\DandomainImageBundle\\": ""
